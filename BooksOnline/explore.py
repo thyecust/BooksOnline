@@ -1,0 +1,123 @@
+# explore 视图
+import functools
+
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
+)
+from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.exceptions import abort
+
+from BooksOnline.auth import login_required
+from BooksOnline.db import get_db
+
+bp = Blueprint('explore', __name__)
+
+@bp.route('/', methods=('GET','POST'))
+def index():
+    n = request.args.get('n')
+    if not n:
+        n = 0
+    else:
+        n = int(n)
+        if n<0:
+            n = 0
+    db = get_db()
+    books = db.execute(
+        'SELECT p.id, title, description, created, owner, price, discount, amount, username'
+        ' FROM book p JOIN user u ON p.owner = u.id'
+        ' ORDER BY created DESC LIMIT 5 OFFSET ?',
+        (n,)
+    ).fetchall()
+    return render_template('explore/index.html', books=books, n=n)
+
+@bp.route('/create', methods=('GET', 'POST'))
+@login_required
+def create():
+    if request.method == 'POST':
+        title = request.form['title']
+        picture = request.form['picture']
+        description = request.form['description']
+        price = request.form['price']
+        discount = request.form['discount']
+        amount = request.form['amount']
+
+        error = None
+
+        if not title:
+            error = 'Title is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO book (picture,owner,price,discount,amount,description,title)'
+                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (picture,g.user['id'],price,discount,amount,description,title)
+            )
+            db.commit()
+            return redirect(url_for('explore.index'))
+
+    return render_template('explore/create.html')
+
+def get_book(id, check_author=True):
+    book = get_db().execute(
+        'SELECT b.id, title, description, created, owner, price, discount, amount, username'
+        ' FROM book b JOIN user u ON b.owner = u.id'
+        ' WHERE b.id = ?',
+        (id,)
+    ).fetchone()
+
+    if book is None:
+        abort(404, "Post id {0} doesn't exist.".format(id))
+
+    # if check_author and book['owner'] != g.user['id']:
+    #     abort(403)
+
+    return book
+
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
+def update(id):
+    book = get_book(id)
+
+    if request.method == 'POST':
+        title = request.form['title']
+        picture = request.form['picture']
+        description = request.form['description']
+        price = request.form['price']
+        discount = request.form['discount']
+        amount = request.form['amount']
+        error = None
+
+        if not title:
+            error = 'Title is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'UPDATE book SET title = ?, picture = ?, description = ?, price = ?, discount = ?, amount = ?'
+                ' WHERE id = ?',
+                (title, picture, description, price, discount, amount, id)
+            )
+            db.commit()
+            return redirect(url_for('explore.index'))
+
+    return render_template('explore/update.html', book=book)
+
+@bp.route('/<int:id>/description',methods=('GET','POST'))
+@login_required
+def description(id):
+    book = get_book(id)
+    return render_template('explore/description.html', book=book)
+
+@bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
+def delete(id):
+    get_book(id)
+    db = get_db()
+    db.execute('DELETE FROM book WHERE id = ?', (id,))
+    db.commit()
+    return redirect(url_for('explore.index'))

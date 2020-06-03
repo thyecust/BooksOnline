@@ -1,4 +1,5 @@
 # auth 视图
+import random
 import functools
 
 from flask import (
@@ -45,6 +46,9 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        passcode1 = request.form['passcode1']
+        passcode2 = request.form['passcode2']
+
         db = get_db()
         error = None
         user = db.execute(
@@ -55,15 +59,19 @@ def login():
             error = '用户名错误'
         elif not check_password_hash(user['password'], password):
             error = '密码错误'
-
+        elif passcode1 != passcode2:
+            error = '验证码错误'
+        
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('explore.index'))
 
         flash(error)
 
-    return render_template('auth/login.html')
+    passcodes = ['hlia','ikdd','plcc','sdqt']
+    passcode = passcodes[random.randint(0,len(passcodes)-1)]
+    return render_template('auth/login.html',passcode=passcode)
 
 @bp.before_app_request
 def load_logged_in_user():

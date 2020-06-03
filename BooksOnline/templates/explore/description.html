@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Book - {{ book['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+  <li>
+    卖家：{{ book['username'] }}
+  </li>
+  <li>
+    描述：{{ book['description'] }}
+  </li>
+  <li>
+    价格：{{ book['price'] }}
+  </li>
+  <li>
+    折扣：{{ book['discount'] }}
+  </li>
+  <li>
+    发布时间：{{ book['created'] }}
+  </li>
+</ul>
+{% endblock %}

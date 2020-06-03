@@ -45,3 +45,12 @@ BooksOnline 设计了 3 个视图：
 * `register.html`，注册，完成了目标4
 
 第二次提交。
+
+`explore` 包含四个页面
+
+* `index.html`，首页，显示商品信息
+* `description.html`，商品详情页
+* `update.html`，更新商品信息
+* `create.html`，增加新的商品
+
+完成了一系列目标，第三次提交。

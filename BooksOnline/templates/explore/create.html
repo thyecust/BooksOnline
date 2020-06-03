@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}添加 Book{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">标题</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+
+    <label for="上传商品图片"></label>
+    <input type="file" name="picture" id="picture" accept="image/*">
+    
+    <label for="description">描述</label>
+    <textarea name="description" id="description">{{ request.form['description'] }}</textarea>
+
+    <label for="price">价格</label>
+    <input name="price" id="price" value="{{ request.form['price'] }}" required>
+
+    <label for="discount">折扣</label>
+    <input name="discount" id="discount" value="{{ request.form['discount'] }}" required>
+
+    <label for="amount">数量</label>
+    <input name="amount" id="amount" value="{{ request.form['amount'] }}" required>
+    <input type="submit" value="保存">
+  </form>
+{% endblock %}

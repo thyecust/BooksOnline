@@ -14,7 +14,11 @@
         <input name="username" id="username" required>
         <label for="password">密码</label>
         <input type="password" name="password" id="password" required>
-        <label for="sex">性别</label>
+        <input type="hidden" name="passcode1" id="passcode1" value="{{ passcode }}">
+        <label for="passcode2">验证码</label>
+        <input name="passcode2" id="passcode2">
+        <img src="{{ url_for('static',filename='img/passcode/'+passcode+'.png') }}">
         <input type="submit" value="登录">
     </form>
+
 {% endblock %}

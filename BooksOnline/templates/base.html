@@ -8,12 +8,13 @@
     <h1>BooksOnline</h1>
     <ul>
         {% if g.user %}
-            <li><span>{{ g.user['username'] }}</span></li>
+            <li><span>欢迎，{{ g.user['username'] }} {{ g.user['sex'] }}</span></li>
             <li><a href="{{ url_for('auth.logout') }}">退出登录</a></li>
         {% else %}
             <li><a href="{{ url_for('auth.register') }}">注册账号</a></li>
             <li><a href="{{ url_for('auth.login') }}">登录</a></li>
         {% endif %}
+        <li><a href="#" id="about">关于我们</a></li>
     </ul>
 </nav>
 <div class="content">
@@ -29,4 +30,9 @@
 </div>
 <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script>
+    document.querySelector('#about').onclick = function(){
+        alert('程序设计实践 2020 春作业，10180038，田昊宇');
+    }
+</script>
 </body>

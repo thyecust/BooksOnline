@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}编辑 "{{ book['title'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">标题</label>
+    <input name="title" id="title"
+      value="{{ request.form['title'] or book['title'] }}" required>
+    <label for="description">说明</label>
+    <textarea name="description" id="description">{{ request.form['description'] or book['description'] }}</textarea>
+    <input type="submit" value="保存">
+  </form>
+  <hr>
+  <form action="{{ url_for('explore.delete', id=book['id']) }}" method="post">
+    <input class="danger" type="submit" value="删除" onclick="return confirm('确定删除吗？');">
+  </form>
+{% endblock %}
