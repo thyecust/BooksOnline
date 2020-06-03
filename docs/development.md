@@ -30,3 +30,18 @@ PRAGMA foreign_keys = on;
 ```
 
 第一次提交。
+
+## 视图
+
+BooksOnline 设计了 3 个视图：
+
+* `auth`，用于验证账号身份
+* `explore`，用于发布商品、浏览商品、加入购物车
+* `check`，用于购物车结算
+
+`auth` 包含两个页面
+
+* `login.html`，登录
+* `register.html`，注册，完成了目标4
+
+第二次提交。
