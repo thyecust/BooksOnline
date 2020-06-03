@@ -1,4 +1,5 @@
 # explore 视图
+import os
 import functools
 
 from flask import (
@@ -6,6 +7,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.exceptions import abort
+from werkzeug.utils import secure_filename
 
 from BooksOnline.auth import login_required
 from BooksOnline.db import get_db
@@ -35,7 +37,7 @@ def index():
 def create():
     if request.method == 'POST':
         title = request.form['title']
-        picture = request.form['picture']
+        picture = request.files['picture']
         description = request.form['description']
         price = request.form['price']
         discount = request.form['discount']
@@ -45,15 +47,19 @@ def create():
 
         if not title:
             error = 'Title is required.'
+        elif picture.filename == '':
+            error = '请上传图片。'
 
         if error is not None:
             flash(error)
         else:
+            filename = secure_filename(picture.filename)
+            picture.save(os.path.join('BooksOnline\static\img\\book', filename))
             db = get_db()
             db.execute(
                 'INSERT INTO book (picture,owner,price,discount,amount,description,title)'
                 ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (picture,g.user['id'],price,discount,amount,description,title)
+                (filename,g.user['id'],price,discount,amount,description,title)
             )
             db.commit()
             return redirect(url_for('explore.index'))
