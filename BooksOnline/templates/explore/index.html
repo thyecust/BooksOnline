@@ -2,31 +2,49 @@
 
 {% block header %}
   <h1>{% block title %}Books{% endblock %}</h1>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('explore.create') }}">添加 Books</a>
-  {% endif %}
+  
 {% endblock %}
 
 {% block content %}
+    {% if g.user %}
+    <a role="button" class="btn btn-outline-primary m-2" href="{{ url_for('explore.create') }}">添加 Books</a>
+    {% endif %}
+    <div class="row">
     {% for book in books %}
-        <article class="book">
-        <header>
-            <div>
-            <h3>{{ book['title'] }}</h1>
-            <div class="about">by {{ book['username'] }} on {{ book['created'].strftime('%Y-%m-%d') }}</div>
+    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-4">
+    <div class="card">
+        <div class="card-header">
+            by {{ book['username'] }} on {{ book['created'].strftime('%Y-%m-%d') }}
+        </div>
+        <img src="{{ url_for('static',filename='img/book/'+book['picture']) }}" class="card-img-top">
+        <div class="card-body">
+            <div class="card-title">
+                <h5>{{ book['title'] }}</h5>
+                <span class="badge badge-success">{{ book['price'] }}</span>
+                <span class="badge badge-danger">{{ book['discount'] }}</span>
             </div>
+            <p class="card-text">
+                {{ book['description'] }}
+            </p>
             {% if g.user['id'] == book['owner'] %}
-                <a class="action" href="{{ url_for('explore.update', id=book['id']) }}">编辑</a>
+                <a class="btn btn-secondary" href="{{ url_for('explore.update', id=book['id']) }}">编辑</a>
             {% else %}
-                <a class="action" href="{{ url_for('explore.description', id=book['id']) }}">查看详情</a>
+                <a class="btn btn-info" href="{{ url_for('explore.description', id=book['id']) }}">查看详情</a>
             {% endif %}
-        </header>
-        <p class="description">{{ book['description'] }}</p>
-        </article>
-        {% if not loop.last %}
-        <hr>
-        {% endif %}
+            <a class="btn btn-warning" id="add" href="{{ url_for('check.add', id=book['id']) }}">添加到购物车</a>
+        </div>
+    </div>
+    {% if not loop.last %}
+    {% endif %}
+    </div>
     {% endfor %}
-    <a href="/?n={{ n-5 }}">上一页</a>
-    <a href="/?n={{ n+5 }}">下一页</a>
+    </div>
+    <div class="row m-2 justify-content-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li class="page-item"><a class="page-link" href="/?n={{ n-5 }}">上一页</a></li>
+              <li class="page-item"><a class="page-link" href="/?n={{ n+5 }}">下一页</a></li>
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

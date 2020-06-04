@@ -1,5 +1,5 @@
 --
--- 由SQLiteStudio v3.2.1 产生的文件 周三 6月 3 14:52:16 2020
+-- 由SQLiteStudio v3.2.1 产生的文件 周四 6月 4 23:40:47 2020
 --
 -- 文本编码：System
 --
@@ -9,6 +9,10 @@ BEGIN TRANSACTION;
 -- 表：book
 DROP TABLE IF EXISTS book;
 CREATE TABLE book (id INTEGER PRIMARY KEY, picture TEXT, owner REFERENCES user (id), price REAL, discount REAL, amount INTEGER, description TEXT, created TIMESTAMP DEFAULT (CURRENT_TIMESTAMP), title TEXT);
+
+-- 表：cart
+DROP TABLE IF EXISTS cart;
+CREATE TABLE cart (id INTEGER PRIMARY KEY, user REFERENCES user (id), book REFERENCES book (id) ON DELETE CASCADE, created TIMESTAMP DEFAULT (CURRENT_TIMESTAMP));
 
 -- 表：comment
 DROP TABLE IF EXISTS comment;

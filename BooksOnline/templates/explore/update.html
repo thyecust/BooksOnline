@@ -5,16 +5,41 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="title">标题</label>
-    <input name="title" id="title"
-      value="{{ request.form['title'] or book['title'] }}" required>
-    <label for="description">说明</label>
-    <textarea name="description" id="description">{{ request.form['description'] or book['description'] }}</textarea>
-    <input type="submit" value="保存">
+<div class="row justify-content-center">
+  <div class="col-xl-8 inline">
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">标题</label>
+      <input class="form-control" name="title" id="title" value="{{ request.form['title'] or book['title'] }}" required>
+    </div>
+    <div class="form-group">
+      <label for="picture">上传图片</label>
+      <input type="file" name="picture" id="picture" accept="image/*">
+    </div>
+    <div class="form-group">
+      <label for="description">描述</label>
+      <textarea class="form-control" name="description" id="description">{{ request.form['description'] or book['description'] }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="price">价格</label>
+      <input class="form-control" name="price" id="price" value="{{ request.form['price'] or book['price'] }}" required>
+    </div>
+    <div class="form-group">
+      <label for="discount">折扣</label>
+      <input class="form-control" name="discount" id="discount" value="{{ request.form['discount'] or book['discount'] }}" required>
+      <small class="form-text text-muted">折扣是一个小数，最大值是 1。</small>
+    </div>
+    <div class="form-group">
+      <label for="amount">数量</label>
+      <input class="form-control" name="amount" id="amount" value="{{ request.form['amount'] or book['amount'] }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">保存</button>
+    <a role="button" href="{{ url_for('explore.delete', id=book['id']) }}" class="btn btn-danger" type="submit" onclick="return confirm('确定删除吗？');">
+      删除
+    </a>
   </form>
-  <hr>
-  <form action="{{ url_for('explore.delete', id=book['id']) }}" method="post">
-    <input class="danger" type="submit" value="删除" onclick="return confirm('确定删除吗？');">
-  </form>
+    
+</div>
+</div>
+  
 {% endblock %}

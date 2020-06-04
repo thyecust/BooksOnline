@@ -21,11 +21,11 @@ def index():
         n = 0
     else:
         n = int(n)
-        if n<0:
+        if n-5<0:
             n = 0
     db = get_db()
     books = db.execute(
-        'SELECT p.id, title, description, created, owner, price, discount, amount, username'
+        'SELECT p.id, title, description, created, owner, price, discount, amount, username, picture'
         ' FROM book p JOIN user u ON p.owner = u.id'
         ' ORDER BY created DESC LIMIT 5 OFFSET ?',
         (n,)
@@ -68,7 +68,7 @@ def create():
 
 def get_book(id, check_author=True):
     book = get_db().execute(
-        'SELECT b.id, title, description, created, owner, price, discount, amount, username'
+        'SELECT b.id, title, description, created, owner, price, discount, amount, username, picture'
         ' FROM book b JOIN user u ON b.owner = u.id'
         ' WHERE b.id = ?',
         (id,)
@@ -89,7 +89,8 @@ def update(id):
 
     if request.method == 'POST':
         title = request.form['title']
-        picture = request.form['picture']
+        picture = request.files['picture']
+        print(bool(picture.filename))
         description = request.form['description']
         price = request.form['price']
         discount = request.form['discount']
@@ -101,12 +102,24 @@ def update(id):
 
         if error is not None:
             flash(error)
+        elif not picture.filename:
+            print('hi')
+            db = get_db()
+            db.execute(
+                'UPDATE book SET title = ?, description = ?, price = ?, discount = ?, amount = ?'
+                ' WHERE id = ?',
+                (title, description, price, discount, amount, id)
+            )
+            db.commit()
+            return redirect(url_for('explore.index'))
         else:
+            filename = picture.filename
+            picture.save(os.path.join('BooksOnline\static\img\\book', filename))
             db = get_db()
             db.execute(
                 'UPDATE book SET title = ?, picture = ?, description = ?, price = ?, discount = ?, amount = ?'
                 ' WHERE id = ?',
-                (title, picture, description, price, discount, amount, id)
+                (title, filename, description, price, discount, amount, id)
             )
             db.commit()
             return redirect(url_for('explore.index'))
@@ -119,11 +132,13 @@ def description(id):
     book = get_book(id)
     return render_template('explore/description.html', book=book)
 
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/<int:id>/delete', methods=('POST','GET'))
 @login_required
 def delete(id):
+    print('hello1')
     get_book(id)
     db = get_db()
     db.execute('DELETE FROM book WHERE id = ?', (id,))
     db.commit()
+    print('hello2')
     return redirect(url_for('explore.index'))

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}购物车{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <table class="table table=hover" id="table">
+    <thead>
+        <tr>
+            <th>Check</th>
+            <th>图片</th>
+            <th>标题</th>
+            <th width="400">描述</th>
+            <th>购买数量</th>
+            <th>单价</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+    <tr id="row-{{ loop.index }}">
+        <td>
+            <input id="check-{{ loop.index }}" type="checkbox">
+        </td>
+        <td><img class="img-thumbnail" width="100" src="{{ url_for('static',filename='img/book/'+book['picture']) }}"></td>
+        <td>
+            {{ book['title'] }}
+            <span id="price-{{ loop.index }}" class="badge badge-success">{{ book['price'] }}</span>
+            <span id="discount-{{ loop.index }}" class="badge badge-danger">{{ book['discount'] }}</span>
+        </td>
+        <td>{{ book['description'] }}</td>
+        <td>
+            <input id="range-{{ loop.index }}" type="range" max="{{ book['amount'] }}" disabled>
+            <p id="amount-{{ loop.index }}" class="text-muted">0</p>
+        </td>
+        <td>{{ book['price']*book['discount'] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <div class="alert alert-warning" role="alert">
+        共节省了<text id="save">0</text>元。
+    </div>
+    <div class="row justify-content-center m-2">
+        <button class="btn btn-warning m-2" id="end">结算</button>
+    </div>
+    <div class="modal fade" id="endCollapse" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalScrollableTitle">程序设计实践 2020 春作业</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            共需要支付：<text id="total"></text>元<br>
+            <img width=200 src="{{ url_for('static',filename='img/end.jpg') }}">
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+        </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var save = 0
+    function benefit(id) {
+        price = Number($('#price-'+id).text());
+        discount = Number($('#discount-'+id).text());
+        return price*(1-discount);
+    }
+    $('[id^=check]').click(function(e ){
+        id = e.target.getAttribute('id').slice(6);
+        discount = Number($('#discount-'+id).text())
+        if(e.target.checked) {
+            $('#row-'+id).addClass('bg-light');
+            $('#range-'+id).removeAttr('disabled');
+            amount = Number($('#range-'+id).val());
+            $('#amount-'+id).text(amount);
+            save += benefit(id) * Number($('#range-'+id).val());
+            $('#save').text(Math.floor(save));
+        } else {
+            $('#row-'+id).removeClass('bg-light');
+            $('#range-'+id).attr('disabled','');
+            save -= discount * Number($('#range-'+id).val());
+            $('#save').text(Math.floor(save));
+        }
+        console.log(e.target.getAttribute('id').slice(6));
+        console.log(e.target.checked);
+    });
+    $('[id^=range').change(function(e) {
+        id = e.target.getAttribute('id').slice(6);
+        var remain = Number($('#amount-'+id).text());
+        amount = Number(e.target.value);
+        $('#amount-'+id).text(amount);
+        save += benefit(id) * (amount - remain);
+        $('#save').text(Math.floor(save)); 
+    });
+    $('#end').click(function(){
+        var n = document.querySelector('table').rows.length
+        var total = 0
+        for(var id=1; id<n; id++) {
+            if(document.querySelector('#check-'+id).checked){
+            amount = Number(document.querySelector('#range-'+id).value);
+            price = Number(document.querySelector('#price-'+id).innerText);
+            total += price*amount;
+            }
+            
+        }
+        document.querySelector('#total').innerText = Math.floor(total);
+        $('#endCollapse').modal();
+    })
+</script>
+{% endblock %}

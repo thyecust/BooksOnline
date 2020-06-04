@@ -5,21 +5,34 @@
 {% endblock %}
 
 {% block content %}
-<ul>
-  <li>
-    卖家：{{ book['username'] }}
-  </li>
-  <li>
-    描述：{{ book['description'] }}
-  </li>
-  <li>
-    价格：{{ book['price'] }}
-  </li>
-  <li>
-    折扣：{{ book['discount'] }}
-  </li>
-  <li>
-    发布时间：{{ book['created'] }}
-  </li>
-</ul>
+<div class="row">
+<div class="col-xl-6">
+  <img class="img-thumbnail" width="400" src="{{ url_for('static',filename='img/book/'+book['picture']) }}">
+</div>
+<div class="col-xl-6">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>卖家</th>
+        <th>价格</th>
+        <th>折扣</th>
+        <th>发布时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ book['username'] }}</td>
+        <td>{{ book['price'] }}</td>
+        <td>{{ book['discount'] }}</td>
+        <td>{{ book['created'] }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p>{{ book['description'] }}</p>
+    </blockquote>
+  </div>
+</div>
+</div>
 {% endblock %}

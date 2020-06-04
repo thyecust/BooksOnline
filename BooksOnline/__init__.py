@@ -48,4 +48,8 @@ def create_app(test_config=None):
     app.register_blueprint(explore.bp)
     app.add_url_rule('/', endpoint='index')
 
+    # check.py
+    from . import check
+    app.register_blueprint(check.bp)
+
     return app

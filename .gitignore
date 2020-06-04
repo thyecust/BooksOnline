@@ -1,2 +1,3 @@
 instance/
 BooksOnline/__pycache__/
+BooksOnline/static/img/book/*
